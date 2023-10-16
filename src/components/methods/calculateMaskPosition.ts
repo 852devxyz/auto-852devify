@@ -45,6 +45,7 @@ export function calcuateMaskPosition(landmarks: faceapi.FaceLandmarks68, maskDim
     const leftFaceNoseDistance = Math.abs(leftFace.x - nose.x);
     //const midX = leftFaceNoseDistance > width / 2 ? nose.x : nose.x - (leftFaceNoseDistance - (width / 2));
     const midX = nose.x;
+	console.log("xyz", rightEye, rightFace, rightFaceMid);
     return [midX , nose.y, width, height, angle, hscale]
 
 }

@@ -62,6 +62,7 @@ export function OutputCanvas({
     detections,
     showLandmarks = false,
     showMask = true,
+	flipMask = true,
     photoTitle,
     maskAdjust = 1,
     ...props
@@ -72,8 +73,9 @@ export function OutputCanvas({
         detection: faceapi.FaceDetection;
     }>[],
     showLandmarks: boolean;
+	flipMask: boolean;
+	showMask?: boolean;
     photoTitle?: string | null | undefined;
-    showMask?: boolean;
     maskAdjust: number
 }) {
     const ref = useRef<HTMLCanvasElement>(null);
@@ -109,7 +111,7 @@ export function OutputCanvas({
                 const maskDimension = getMaskDimension(glasses, maskAdjust);
                 for (const face of detections) {
                     let [midX, midY, width, height, angle, hscale] = calcuateMaskPosition(face.landmarks, maskDimension);
-                    drawRotatedImage(context, glasses, midX, midY, width, height, angle, hscale);
+                    drawRotatedImage(context, glasses, midX, midY, width, height, angle, flipMask ? hscale : 1);
                 }
             }
 

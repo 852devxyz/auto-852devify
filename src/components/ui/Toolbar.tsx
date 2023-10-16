@@ -11,7 +11,7 @@ export function Toolbar() {
       setImageAtom((prev) => ({ ...prev, maskUri: e.target.getAttribute("src"), maskAdjust: widthAdjust }));
     }
     const buttonList = maskList.map(m => (
-        <button className="px-2 border-2 mr-1">
+        <button className="px-2 border-2 mr-1" key={m.uri}>
             <img src={m.uri} style={imgbtnStyle} onClick={(e) => ToolbarHandler(e, m.widthAdjust)} />
         </button>
     ))
