@@ -15,27 +15,23 @@ import { useQuery } from '@tanstack/react-query';
 import { ImageAtom } from '@/components/atomValues';
 import { Toolbar } from '@/components/ui/Toolbar';
 import { masks } from '@/settings/masks';
+import { FileInputFormData } from '@/components/types';
 
 
-interface FileInputFormData {
-  files: File[];
-  minConfidence: number;
-}
+
 const FileInputForm = () => {
   const setImageAtom = useSetAtom(ImageAtom);
-  const defaultMask = masks.noggles1;
   const { handleSubmit, register } = useForm({
     defaultValues: {
-      files: [],
-      minConfidence: 0.3,
+      files: []
     } as FileInputFormData,
   });
 
-  const onSubmit = ({ files, minConfidence }: FileInputFormData) => {
+  const onSubmit = ({ files }: FileInputFormData) => {
     if (files.length === 0) {
       return;
     }
-    setImageAtom((prev) => ({ ...prev, uri: URL.createObjectURL(files[0]), minConfidence: minConfidence, filename: files[0].name, maskUri: defaultMask.uri, maskAdjust: defaultMask.widthAdjust }));
+    setImageAtom((prev) => ({ ...prev, uri: URL.createObjectURL(files[0]), filename: files[0].name }));
   };
 
   return (
@@ -49,11 +45,8 @@ const FileInputForm = () => {
             <Input {...register('files')} type="file" id="files" accept=".jpg,.jpeg,.png" />
             <Button type="submit">Nounify</Button>
           </div>
-          <div className="flex flex-row mt-2">
-            <div className="flex flex-row mr-2">
-              <span className="relative top-1/4 mr-2">Min. Conf.</span>
-              <input className="shadow rounded w-10" {...register('minConfidence', { "valueAsNumber": true })} />
-            </div>
+          <div className="flex flex-col mt-2">
+            
             <Toolbar />
 
           </div>
@@ -67,12 +60,10 @@ const FileInputForm = () => {
 
 
 function FaceDetection() {
-  const showLM = true;
-  const showMask = true;
-  const flipMask = false;
-  const { uri, maskUri, minConfidence, filename, maskAdjust } = useAtomValue(ImageAtom);
+  //const flipMask = false;
+  const { uri, maskUri, minConfidence, filename, maskAdjust, flip, showMask, showLM } = useAtomValue(ImageAtom);
   //const [isReady, setIsReady] = useState(false);
-  console.log("faceDetection", maskUri);
+  console.log("faceDetection", minConfidence, maskUri);
   const isReady = false;
   const detections = singlePhotoFaceDetection(uri, minConfidence);
   //setIsReady(true);
@@ -80,7 +71,7 @@ function FaceDetection() {
     <div className="relative mx-auto grid h-auto max-w-lg items-center justify-center">
       {isReady ? <Loader2Icon className="h-6 w-6 animate-spin" /> : null}
       <OutputCanvas detections={detections}
-        baseImageUri={uri} maskImageUri={maskUri} showLandmarks={showLM} showMask={showMask} flipMask={flipMask} photoTitle={filename}
+        baseImageUri={uri} maskImageUri={maskUri} showLandmarks={showLM} showMask={showMask} flipMask={flip} photoTitle={filename}
         className="h-auto max-w-full" key={`${uri}`} maskAdjust={maskAdjust} />
     </div>
   );

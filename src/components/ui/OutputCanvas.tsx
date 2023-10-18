@@ -60,9 +60,9 @@ export function OutputCanvas({
     baseImageUri,
     maskImageUri,
     detections,
-    showLandmarks = false,
-    showMask = true,
-	flipMask = true,
+    showLandmarks,
+    showMask,
+	flipMask,
     photoTitle,
     maskAdjust = 1,
     ...props
@@ -110,7 +110,7 @@ export function OutputCanvas({
             if (showMask) {
                 const maskDimension = getMaskDimension(glasses, maskAdjust);
                 for (const face of detections) {
-                    let [midX, midY, width, height, angle, hscale] = calcuateMaskPosition(face.landmarks, maskDimension);
+                    let [midX, midY, width, height, angle, hscale] = calcuateMaskPosition(face.landmarks, maskDimension, flipMask);
                     drawRotatedImage(context, glasses, midX, midY, width, height, angle, flipMask ? hscale : 1);
                 }
             }
@@ -118,7 +118,7 @@ export function OutputCanvas({
             setReady(true);
         }, 50);
         return () => clearTimeout(t);
-    }, [ref, detections, baseImageUri]);
+    }, [ref, detections, baseImageUri, showLandmarks, showMask, flipMask, maskImageUri]);
 
     return (
         <Card>

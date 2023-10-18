@@ -3,8 +3,15 @@ interface InputData {
     maskUri: string | null,
     minConfidence: number,
     filename: string | null,
-    maskAdjust: number
+    maskAdjust: number,
+    flip: boolean,
+    showMask: boolean,
+    showLM: boolean
 }
 
+interface FileInputFormData {
+    files: File[];
+  }
 
-export type { InputData }
+
+export type { InputData,FileInputFormData }

@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import * as faceapi from 'face-api.js';
 function singlePhotoFaceDetection(uri: string | null, minConfidence:number = 0.35){
+    console.log("singlePhotoFaceDetection", minConfidence);
     const { data: net} = useQuery({
       queryKey: ['face-api'],
       queryFn: async () => {
