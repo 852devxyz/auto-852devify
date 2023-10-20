@@ -35,7 +35,8 @@ export function calcuateMaskPosition(landmarks: faceapi.FaceLandmarks68, maskDim
     const hscale = rightFaceDistance > leftFaceDistance && flipMask? -1 : 1;
     const dx = rightFace.x - leftFace.x;
     const dy = rightFace.y - leftFace.y;
-    const angle = Math.atan2(dy, dx) * hscale;
+    //const angle = Math.atan2(dy, dx) * hscale;
+    const angle = Math.atan2(dy, dx);
     //const width = Math.abs(leftEyeMid.x - rightEyeMid.x) * GLASSES_SCALE_FACTOR;
     const width = Math.abs(leftFaceMid.x - rightFaceMid.x) * maskDimension.widthAdjust;
     const height = Math.abs(width * maskDimension.height / maskDimension.width);

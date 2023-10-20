@@ -1,6 +1,7 @@
 interface InputData {
     uri: string | null,
-    maskUri: string | null,
+    maskLUri: string | null,
+    maskRUri: string | null,
     minConfidence: number,
     filename: string | null,
     maskAdjust: number,
@@ -13,5 +14,10 @@ interface FileInputFormData {
     files: File[];
   }
 
+  interface Mask{
+    uriL: String,
+    uriR: String,
+    widthAdjust: number
+  }
 
-export type { InputData,FileInputFormData }
+export type { InputData,FileInputFormData, Mask }

@@ -11,11 +11,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 function drawRotatedImage(
     context: CanvasRenderingContext2D,
-    image: CanvasImageSource,
+    maskL: CanvasImageSource,
+    maskR: CanvasImageSource,
+    maskAdjust: number,
     x: number,
     y: number,
     width: number,
     height: number,
+    enlarge: number,
     angle: number,
     hscale: number
 ) {
@@ -26,7 +29,7 @@ function drawRotatedImage(
     // move to the middle of where we want to draw our image
     //context.translate(x - (width * 0.1  * hscale) , y); //Jonathan
     context.translate(x, y);
-    context.scale(hscale, 1);
+    //context.scale(hscale, 1);
     // rotate around that point
     context.rotate(angle);
 
@@ -34,14 +37,20 @@ function drawRotatedImage(
     // and height of the image
     //context.drawImage(image, -(width / 2), -(height / 2), width, height);
 
-    let w = width * 0.06 * hscale; //0.06 = 10(middle)/160
-    if (hscale > 0) {
-        w -= width * 0.18; // 0.18 = 30(ear)/160
-    }
+    //let w = width * 0.06 * hscale; //0.06 = 10(middle)/160
+    let w = width * (maskAdjust -1 ) * hscale * enlarge;
+    
+    
+    //w = 0
     console.log(width, w, hscale);
     //w = width * 0.1;
     // w = width;
-    context.drawImage(image, -(width / 2) + w, -(height / 2), width, height);
+    
+    let mask = hscale > 0 ? maskL : maskR;
+    console.log("RotateImage", hscale, mask);
+    width = width * enlarge;
+    height = height * enlarge;
+    context.drawImage(mask, -((width + w) / 2), -(height / 2), width, height);
     // and restore the coords to how they were when we began
     context.restore();
 }
@@ -58,7 +67,9 @@ function createImageElement(src: string): Promise<HTMLImageElement> {
 
 export function OutputCanvas({
     baseImageUri,
-    maskImageUri,
+    maskImageLUri,
+    maskImageRUri,
+    enlarge = 1,
     detections,
     showLandmarks,
     showMask,
@@ -68,7 +79,9 @@ export function OutputCanvas({
     ...props
 }: HTMLAttributes<HTMLCanvasElement> & {
     baseImageUri: string | null;
-    maskImageUri: string | null;
+    maskImageLUri: string | null;
+    maskImageRUri: string | null;
+    enlarge: number;
     detections?: faceapi.WithFaceLandmarks<{
         detection: faceapi.FaceDetection;
     }>[],
@@ -81,7 +94,7 @@ export function OutputCanvas({
     const ref = useRef<HTMLCanvasElement>(null);
     const [ready, setReady] = useState(false);
     useEffect(() => {
-        if (!window || !detections || !detections.length || !baseImageUri || !maskImageUri) {
+        if (!window || !detections || !detections.length || !baseImageUri || !maskImageLUri || !maskImageRUri) {
             return;
         }
         setReady(false);
@@ -95,7 +108,8 @@ export function OutputCanvas({
             }
             // console.log('inTimeout');
             const bgImage = await createImageElement(baseImageUri);
-            const glasses = await createImageElement(maskImageUri);
+            const maskL = await createImageElement(maskImageLUri);
+            const maskR = await createImageElement(maskImageRUri);
             ref.current.height = bgImage.height;
             ref.current.width = bgImage.width;
             context.drawImage(bgImage, 0, 0);
@@ -108,17 +122,17 @@ export function OutputCanvas({
 
             // Reference: https://github.com/akirawuc/auto-nounify-server/blob/main/services/nounify/main.py#L35
             if (showMask) {
-                const maskDimension = getMaskDimension(glasses, maskAdjust);
+                const maskDimension = getMaskDimension(maskL, maskAdjust);
                 for (const face of detections) {
                     let [midX, midY, width, height, angle, hscale] = calcuateMaskPosition(face.landmarks, maskDimension, flipMask);
-                    drawRotatedImage(context, glasses, midX, midY, width, height, angle, flipMask ? hscale : 1);
+                    drawRotatedImage(context, maskL, maskR, maskAdjust, midX, midY, width, height, enlarge, angle, flipMask ? hscale : 1);
                 }
             }
 
             setReady(true);
         }, 50);
         return () => clearTimeout(t);
-    }, [ref, detections, baseImageUri, showLandmarks, showMask, flipMask, maskImageUri]);
+    }, [ref, detections, baseImageUri, showLandmarks, showMask, flipMask, maskImageLUri, maskImageRUri]);
 
     return (
         <Card>
