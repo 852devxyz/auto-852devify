@@ -1,23 +1,14 @@
 
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import { InputData, Mask } from '../types';
-import { ImageAtom } from '../atomValues';
-import { masks } from '../../settings/masks';
-import { RefreshCcwDotIcon } from 'lucide-react';
-import { Key, useState } from 'react';
+import { InputData, MaskButtonProps } from '../../lib/types';
+import { ImageAtom } from '../../lib/atomValues';
+import { Key, useState, ChangeEvent } from 'react';
+import { settings, maskTypes } from '@/settings/global';
 export function Toolbar() {
   const imgbtnStyle = { "width": "50px" };
   const setImageAtom = useSetAtom(ImageAtom);
-  const { minConfidence, flip, showMask, showLM } = useAtomValue(ImageAtom);
+  const { maskLUri, maskRUri, maskAdjust, minConfidence, flip, showMask, showLM, maskType } = useAtomValue(ImageAtom);
 
-  //const [minConf, setminConf] = useState(0.35);
-  //const maskList = [masks.noggles1, masks.noggles2, masks.noggles3];
-  const defaultMask = masks.noggles1;
-  const [mask, setMask] = useState<Mask>(defaultMask);
-  function ToolbarHandler(e: any, widthAdjust: number) {
-    console.log("ToolbarHandler", e.target.getAttribute("src"));
-    setImageAtom((prev) => ({ ...prev, maskUri: e.target.getAttribute("src"), maskAdjust: widthAdjust }));
-  }
 
   function chkHandler(e: any, chkKey: string) {
     console.log("chkHandler", chkKey, e.target?.checked);
@@ -38,61 +29,102 @@ export function Toolbar() {
 
   function minConfidenceHandler(e: any) {
     console.log("minConfidenceHandler", e.target.value);
-    //setminConf(e.target.value);
     setImageAtom((prev) => ({ ...prev, minConfidence: parseFloat(e.target.value) }));
   }
 
-  function widthAdjustHandler(e: any){
+  function widthAdjustHandler(e: ChangeEvent<HTMLInputElement>) {
     console.log("widthAdjustHandler", e.target.value);
+    if (e.target?.value) {
+      setImageAtom((prev) => ({ ...prev, maskAdjust: parseFloat(e.target.value) }));
+    }
+
   }
 
-  interface MaskButtonProps{
-    title: String,
-    key: string
-    uri: string,
-    widthAdjust: number
+  function maskTypeHandler(e: ChangeEvent<HTMLSelectElement>) {
+    console.log("maskTypeHandler", e.target.value);
+    if (e.target?.value) {
+      const mt = parseInt(e.target.value);
+      setImageAtom((prev) => ({ ...prev, maskType: mt }));
+    }
+
   }
 
-  function changeMaskHandler(e: any, key:string){
-    //e.target
-    setMask({uriL: "", uriR: "", widthAdjust: 1})
+
+
+  function changeMaskLeftHandler(e: ChangeEvent<HTMLInputElement>) {
+    if (e.currentTarget.files && e.currentTarget.files.length == 1) {
+      const src = URL.createObjectURL(e.currentTarget.files[0]);
+      setImageAtom((prev) => ({ ...prev, maskLUri: src }));
+    }
   }
 
-  function MaskButton(props:MaskButtonProps) {
-    return (
-      <div className="ml-2 bg-black rounded-sm w-20 flex flex-col">
-        <div className="text-white text-xs text-center">{props.title}</div>
-        
-        <button className="bg-white px-2 border-2" key={props.key}>
-          <img src={props.uri} style={imgbtnStyle} />
-        </button>
-        <input onChange={(e) => changeMaskHandler(e, props.key)} type="file" id="files" accept=".jpg,.jpeg,.png" />
-        {/* <div className="text-center"><button onClick={(e) => ToolbarHandler(e, props.widthAdjust)}><RefreshCcwDotIcon color="white" size={12}></RefreshCcwDotIcon></button></div> */}
-      </div>
-    )
+  function changeMaskRightHandler(e: ChangeEvent<HTMLInputElement>, key: string) {
+    if (e.currentTarget.files && e.currentTarget.files.length == 1) {
+      const src = URL.createObjectURL(e.currentTarget.files[0]);
+      setImageAtom((prev) => ({ ...prev, maskRUri: src }));
+    }
   }
-  // const buttonList = maskList.map(m => (
-  //   <button className="px-2 border-2 ml-2" key={m.uri}>
-  //     <img src={m.uri} style={imgbtnStyle} onClick={(e) => ToolbarHandler(e, m.widthAdjust)} />
-  //   </button>
-  // ))
+
+  function MaskButton(props: MaskButtonProps) {
+    if (props.uri) {
+      return (
+        <div className="bg-black rounded-sm w-20 flex flex-col">
+          <div className="text-white text-xs text-center">{props.title}</div>
+          <button className="bg-white px-2 border-2" key={props.buttonKey}>
+            <img src={props.uri} style={imgbtnStyle} />
+          </button>
+          <input onChange={(e) => props.changeHandler(e)} type="file" id="files" accept=".jpg,.jpeg,.png" />
+        </div>
+      )
+    } else {
+      return (
+        <div className="bg-black rounded-sm w-20 flex flex-col">
+          <div className="text-white text-xs text-center">{props.title}</div>
+          <input onChange={(e) => props.changeHandler(e)} type="file" id="files" accept=".jpg,.jpeg,.png" />
+        </div>
+      )
+    }
+
+  }
+
+  function MaskTypeOptions() {
+    const keys = Object.keys(maskTypes).filter((v) => isNaN(Number(v)));
+
+    return keys.map((key, index) => {
+      return (<option value={index}>{key}</option>)
+
+    })
+  }
   return (
     <>
-      <div className="flex flex-row mr-2 justify-start">
-        <div className="flex flex-col justify-start w-24 rounded-sm border-2 px-2">
-          <span>Min. Conf.</span>
-          <input className="shadow rounded justify-self-start" name="minConfidence" type="number" value={minConfidence} step="0.05" onBlur={minConfidenceHandler} />
+
+      <div className="flex flex-row justify-start gap-x-1">
+
+        <MaskButton title="Left" buttonKey="maskLUri" uri={maskLUri} changeHandler={changeMaskLeftHandler}></MaskButton>
+        <MaskButton title="Right" buttonKey="maskRUri" uri={maskRUri} changeHandler={changeMaskRightHandler}></MaskButton>
+        <div className="flex flex-col">
+          <div className="flex flex-row border-2 justify-stretch">
+            <label className="w-32">Mask Type</label>
+            <select className="shadow rounded" onChange={maskTypeHandler}>
+              {MaskTypeOptions()}
+            </select>
+          </div>
+          <div className="flex flex-row border-2 justify-stretch">
+            <label className="w-32 justify-self-start">Min. Conf.</label>
+            <input className="shadow rounded" name="minConfidence" type="number" defaultValue={minConfidence} step="0.05" onChange={minConfidenceHandler} />
+          </div>
+
+          <div className="flex flex-row border-2 justify-stretch">
+            <span className="w-32">Width Adjust</span>
+            <input className="shadow rounded" name="widthAdjust" type="number" defaultValue={maskAdjust} step="0.01" onChange={widthAdjustHandler} />
+
+          </div>
 
         </div>
-       <MaskButton title="Left" key={"uriL"} uri={mask.uriL.toString()} widthAdjust={mask.widthAdjust}></MaskButton>
-       <MaskButton title="Right" key={"uriR"} uri={mask.uriR.toString()} widthAdjust={mask.widthAdjust}></MaskButton>
-       
-     
-        <div className="flex flex-col ml-2 justify-start w-32 rounded-sm border-2 px-2">
-          <span>Width Adjust</span>
-          <input className="shadow rounded" name="widthAdjust" type="number" value={mask.widthAdjust} step="0.01" onBlur={widthAdjustHandler} />
 
-        </div>
+
+
+
       </div>
 
       <div className="h-10 flex flew-row">

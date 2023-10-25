@@ -2,6 +2,7 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import * as faceapi from 'face-api.js';
+import { settings } from '@/settings/global';
 function singlePhotoFaceDetection(uri: string | null, minConfidence:number = 0.35){
     console.log("singlePhotoFaceDetection", minConfidence);
     const { data: net} = useQuery({
@@ -22,7 +23,6 @@ function singlePhotoFaceDetection(uri: string | null, minConfidence:number = 0.3
         const detections = await faceapi
           .detectAllFaces(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence }))
           .withFaceLandmarks();
-        // console.log({ detections });
         return detections ?? [];
       },
       enabled,
@@ -36,8 +36,8 @@ function multplePhotoFaceDection(photoList: string[], minConfidence:number = 0.3
       const { data: net } = useQuery({
         queryKey: ['face-api'],
         queryFn: async () => {
-          await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
-          await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+          await faceapi.nets.ssdMobilenetv1.loadFromUri(settings.modelsFolder);
+          await faceapi.nets.faceLandmark68Net.loadFromUri(settings.modelsFolder);
           return true;
         },
         staleTime: Infinity,
@@ -53,7 +53,6 @@ function multplePhotoFaceDection(photoList: string[], minConfidence:number = 0.3
             const detections = await faceapi
               .detectAllFaces(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence }))
               .withFaceLandmarks();
-            // console.log({ detections });
             return detections ?? [];
           },
           enabled,

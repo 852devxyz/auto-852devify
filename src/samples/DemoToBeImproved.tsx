@@ -1,6 +1,7 @@
 'use client';
 import { multplePhotoFaceDection } from "@/components/methods/faceDetection";
 import { OutputCanvas } from "@/components/ui/OutputCanvas";
+import { settings } from "@/settings/global";
 
 function DemoToBeImproved() {
     const tbiPhotos = [
@@ -16,8 +17,6 @@ function DemoToBeImproved() {
       "./sample_images/to_be_improved/10_input.jpeg",
     ];
     const minConfidence = 0.30;
-    const maskUri = "./red160px.png";
-    const maskAdjust = 1.2;
     //let canvasList:any[] = [];
   
     const detectionList = multplePhotoFaceDection(tbiPhotos, minConfidence);
@@ -25,8 +24,17 @@ function DemoToBeImproved() {
     const canvasList = detectionList.map(d => {
       const {uri, filename, detections} = d;
       return  <OutputCanvas detections={detections}
-      baseImageUri={uri} maskImageUri={maskUri} showLandmarks={false} photoTitle={filename}
-      className="h-auto max-w-full" key={`${uri}`} maskAdjust = {maskAdjust }/>
+      baseImageUri={uri} 
+      maskImageLUri={settings.default.mask.uriL} 
+      maskImageRUri={settings.default.mask.uriL} 
+      showLandmarks={false} 
+      showMask = {true}
+      flipMask = {true}
+      maskType={0}
+      enlarge={settings.default.enlarge}
+      photoTitle={filename}
+    
+      className="h-auto max-w-full" key={`${uri}`} maskAdjust = {settings.default.mask.widthAdjust }/>
     })
     
   

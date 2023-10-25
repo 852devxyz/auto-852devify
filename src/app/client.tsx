@@ -8,14 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { OutputCanvas } from '@/components/ui/OutputCanvas';
-//import { CSSProperties } from 'react';
 import { singlePhotoFaceDetection, multplePhotoFaceDection } from '@/components/methods/faceDetection';
 
 import { useQuery } from '@tanstack/react-query';
-import { ImageAtom } from '@/components/atomValues';
+import { ImageAtom } from '@/lib/atomValues';
 import { Toolbar } from '@/components/ui/Toolbar';
-import { masks } from '@/settings/masks';
-import { FileInputFormData } from '@/components/types';
+import { FileInputFormData } from '@/lib/types';
+import { settings } from '@/settings/global';
 
 
 
@@ -60,19 +59,16 @@ const FileInputForm = () => {
 
 
 function FaceDetection() {
-  //const flipMask = false;
-  const { uri, maskLUri, maskRUri, minConfidence, filename, maskAdjust, flip, showMask, showLM } = useAtomValue(ImageAtom);
-  //const [isReady, setIsReady] = useState(false);
+  const { uri, maskLUri, maskRUri, minConfidence, filename, maskAdjust, flip, showMask, showLM, maskType } = useAtomValue(ImageAtom);
   console.log("faceDetection", minConfidence, maskLUri, maskRUri);
   const isReady = false;
   const detections = singlePhotoFaceDetection(uri, minConfidence);
-  //setIsReady(true);
   return (
     <div className="relative mx-auto grid h-auto max-w-lg items-center justify-center">
       {isReady ? <Loader2Icon className="h-6 w-6 animate-spin" /> : null}
       <OutputCanvas detections={detections}
-        baseImageUri={uri} maskImageLUri={maskLUri} maskImageRUri={maskRUri} showLandmarks={showLM} showMask={showMask} flipMask={flip} photoTitle={filename}
-        className="h-auto max-w-full" key={`${uri}`} maskAdjust={maskAdjust} enlarge = {1.2} />
+        baseImageUri={uri} maskImageLUri={maskLUri} maskImageRUri={maskRUri} showLandmarks={showLM} showMask={showMask} maskType={maskType} flipMask={flip} photoTitle={filename}
+        className="h-auto max-w-full" key={`${uri}`} maskAdjust={maskAdjust} enlarge = {settings.default.enlarge} />
     </div>
   );
 }

@@ -10,20 +10,29 @@ Inspired by `auto-nounify`, an open source tool by 852dev.xyz to anonymize event
 
 ## Settings
 - Image files should be placed in "public" folder
-- Updating the settings file settings/masks.ts
+- Updating the settings file settings/global.ts
 - Setting structure
-    - {maskKey: {widthAdjust, uri}}
-    - widthAdjust: Width ratio to resize the mask.
-    - uri: path of mask image file.
-### Examples  
+### global.ts Example
 ```
 {
-    noggles1: {widthAdjust: 1.2, uri: './red160px.png'},
-    noggles2: {widthAdjust: 1.2, uri: './grey-light160px.png'},
-    noggles3: {widthAdjust: 1.2, uri: './frog-green160px.png'},
+ "modelsFolder": "/models", 
+    "default": {
+        "mask": {widthAdjust: 1.18, uriL: './red160px.png', uriR: './redr160px.png', comment: "Width Adjust: noggles width(160), noggles holder(30),due expand 1/5 for better output"},
+        "confidence": 0.3,
+        "flip": true,
+        "showMask":true,
+        "showLM":false,
+        "hideDemoButton": true,
+    }
 }
 ```
-    
+-- modelsFolder: Folder path of faceApi Models. Should be place inside /public
+-- default: All default attributes here
+-- default.mask: Default mask for initialize 
+-- default.mask.widthAdjust: Default value is 1. The value for adjusting the size of the mask for example the noggles' handle width is are 0.18 ratio of the whole noggles and which should not count as the width of the mask. Thus the adjust value should be 1.18
+-- default.mask.uriL: Uri of the mask if the target face direction is facing Left side.
+-- default.mask.uriR: Uri of the mask if the target face direction is facing Right side.
+-- default.mask.comment: Comment text for the mask attribute.    
 
 # Usage
 ## Face Detecction API
@@ -66,7 +75,7 @@ import { calcuateMaskPosition, getMaskDimension } from '@/components/methods/cal
 {width, height, widthAdjust}
 ```
 
-### calcuateMaskPosition(landmarks: faceapi.FaceLandmarks68, maskDimension: any)
+### calcuateMaskPosition(landmarks: faceapi.FaceLandmarks68, maskDimension: MaskDimension)
 - Landmarks from detections
 - maskDimension from getMaskDimension {width, height, widthAdjust}
 - return

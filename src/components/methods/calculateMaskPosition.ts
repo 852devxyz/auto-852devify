@@ -1,5 +1,6 @@
 import * as faceapi from 'face-api.js';
-//const GLASSES_SCALE_FACTOR = 2.2;
+import { MaskDimension } from '../../lib/types';
+import { maskTypes } from '@/settings/global';
 
 function middlePoint(points: faceapi.Point[]) {
     const x = points.reduce((acc, curr) => acc + curr.x, 0) / points.length;
@@ -7,46 +8,112 @@ function middlePoint(points: faceapi.Point[]) {
     return { x, y };
 }
 
-export function getMaskDimension(mask: HTMLImageElement, widthAdjust: number = 1){
+export function getMaskDimension(mask: HTMLImageElement, widthAdjust: number = 1): MaskDimension {
     const width = mask.width;
     const height = mask.height;
-    return {width, height, widthAdjust}
+    return { width, height, widthAdjust }
 }
 
 
-export function calcuateMaskPosition(landmarks: faceapi.FaceLandmarks68, maskDimension: any, flipMask:boolean) {
+export function calcuateMaskPosition(maskType: number, landmarks: faceapi.FaceLandmarks68, maskDimension: MaskDimension, flipMask: boolean): Array<number> {
+    //Eyes Middle point
     const leftEyeMid = middlePoint(landmarks.getLeftEye());
     const rightEyeMid = middlePoint(landmarks.getRightEye());
+
+    //Most left/right points of eyes/face
     const leftEye = landmarks.positions[36];
     const rightEye = landmarks.positions[45];
     const leftFace = landmarks.positions[0];
     const rightFace = landmarks.positions[16];
-    const leftFaceMid = {x: (leftFace.x + leftEye.x) / 2, y: (leftFace.y + leftEye.y) / 2};
-    const rightFaceMid = {x: (rightFace.x + rightEye.x) / 2, y: (rightFace.y + rightEye.y) / 2};
+
+    //face width
+    const faceWidth = leftFace.x - rightFace.x;
+
+    //Mid points between face and eyes boundary
+    const leftFaceMid = { x: (leftFace.x + leftEye.x) / 2, y: (leftFace.y + leftEye.y) / 2 };
+    const rightFaceMid = { x: (rightFace.x + rightEye.x) / 2, y: (rightFace.y + rightEye.y) / 2 };
+
+    //Face height
+    const faceLeftTop = landmarks.positions[19];
+    const faceRightTop = landmarks.positions[24];
+    const faceBottom = landmarks.positions[8];
+    const [heightLeftA, heightLeftB] = [(faceLeftTop.x - faceBottom.x), (faceLeftTop.y - faceBottom.y)];
+    const [heightRightA, heightRightB] = [(faceRightTop.x - faceBottom.x), (faceRightTop.y - faceBottom.y)];
+    const leftFaceHeight = Math.sqrt(heightLeftA * heightLeftA + heightLeftB * heightLeftB);
+    const rightFaceHeight = Math.sqrt(heightRightA * heightRightA + heightRightB * heightRightB);
+
+    //Take the longer one as the face height
+    const faceHeight = Math.max(leftFaceHeight, rightFaceHeight);
+
+    //Nose position
     const nose = landmarks.positions[27] //27 or 28
-    //const [leftA,leftB ]= [(leftEye.x - leftFace.x),(leftEye.y - leftFace.y)];
-    //const [rightA,rightB ]= [(rightEye.x - rightFace.x),(rightEye.y - rightFace.y)];
-    const [leftA,leftB ]= [(nose.x - leftFace.x),(nose.y - leftFace.y)];
-    const [rightA,rightB ]= [(nose.x - rightFace.x),(nose.y - rightFace.y)];
-    
+
+    //Length of left/right between left/right face and nose. To detect the direction of the face
+    const [leftA, leftB] = [(nose.x - leftFace.x), (nose.y - leftFace.y)];
+    const [rightA, rightB] = [(nose.x - rightFace.x), (nose.y - rightFace.y)];
     const leftFaceDistance = Math.sqrt(leftA * leftA + leftB * leftB); //a2 + b2 = c2 ,Pythagorean theorem
     const rightFaceDistance = Math.sqrt(rightA * rightA + rightB * rightB);
-    console.log("face:", leftEye, leftFace, rightEye, rightFace, leftFaceDistance, rightFaceDistance,leftFaceMid,rightFaceMid);
-    const hscale = rightFaceDistance > leftFaceDistance && flipMask? -1 : 1;
-    const dx = rightFace.x - leftFace.x;
-    const dy = rightFace.y - leftFace.y;
-    //const angle = Math.atan2(dy, dx) * hscale;
-    const angle = Math.atan2(dy, dx);
-    //const width = Math.abs(leftEyeMid.x - rightEyeMid.x) * GLASSES_SCALE_FACTOR;
-    const width = Math.abs(leftFaceMid.x - rightFaceMid.x) * maskDimension.widthAdjust;
-    const height = Math.abs(width * maskDimension.height / maskDimension.width);
-    //const mxAbject = width * 0.2 * hscale;
-    //let [midX, midY, width, height, angle, hscale] = cacluateMaskPosition(face.landmarks)
-    //return [(leftFaceMid.x + rightFaceMid.x) / 2 , nose.y, width, height, angle, hscale]
-    const leftFaceNoseDistance = Math.abs(leftFace.x - nose.x);
-    //const midX = leftFaceNoseDistance > width / 2 ? nose.x : nose.x - (leftFaceNoseDistance - (width / 2));
-    const midX = nose.x;
-	console.log("xyz", rightEye, rightFace, rightFaceMid);
-    return [midX , nose.y, width, height, angle, hscale]
+
+    //for flipping according to the face direction
+    const hscale = rightFaceDistance > leftFaceDistance && flipMask ? -1 : 1;
+    console.log("face:", leftEye, leftFace, rightEye, rightFace, leftFaceDistance, rightFaceDistance, leftFaceMid, rightFaceMid);
+
+    //Calculation the attributes accoring to maskType
+    switch (maskType) {
+        //Base on the middle point of the eyes
+        case maskTypes.byEyesMiddle:
+            return (() => {
+                const dx = rightEyeMid.x - leftEyeMid.x;
+                const dy = rightEyeMid.y - leftEyeMid.y;
+                const angle = Math.atan2(dy, dx);
+                const width = Math.abs(rightEyeMid.x - leftEyeMid.x) * maskDimension.widthAdjust;
+                const height = Math.abs(width * maskDimension.height / maskDimension.width);
+                const midX = (rightEyeMid.x + leftEyeMid.x) / 2;
+                const midY = (rightEyeMid.y + leftEyeMid.y) / 2;
+                return [midX, midY, width, height, angle, hscale]
+            })();
+
+        //Base on the face width 
+        case maskTypes.byFaceWidth:
+            return (() => {
+                const dx = rightFace.x - leftFace.x;
+                const dy = rightFace.y - leftFace.y;
+                const angle = Math.atan2(dy, dx);
+                const width = Math.abs(faceWidth) * maskDimension.widthAdjust;
+                const height = Math.abs(width * maskDimension.height / maskDimension.width);
+                const midX = nose.x;
+                const midY = nose.y;
+                return [midX, midY, width, height, angle, hscale]
+            })();
+
+        //Mask the whole face without concern the ratio
+        case maskTypes.fullFace: //Not by ratio
+            return (() => {
+                const dx = rightFace.x - leftFace.x;
+                const dy = rightFace.y - leftFace.y;
+                const angle = Math.atan2(dy, dx);
+                const width = Math.abs(faceWidth) * maskDimension.widthAdjust;
+
+                const height = faceHeight;
+                const midX = nose.x;
+                const midY = nose.y;
+                return [midX, midY, width, height, angle, hscale]
+            })();
+
+        //Type 0: Base on middle of the face boundary and the eye boundary
+        default:
+            return (() => {
+                const dx = rightFaceMid.x - leftFaceMid.x;
+                const dy = rightFaceMid.y - leftFaceMid.y;
+                const angle = Math.atan2(dy, dx);
+                const width = Math.abs(leftFaceMid.x - rightFaceMid.x) * maskDimension.widthAdjust;
+                const height = Math.abs(width * maskDimension.height / maskDimension.width);
+                const midX = nose.x;
+                const midY = nose.y;
+                return [midX, midY, width, height, angle, hscale]
+            })();
+
+    }
+
 
 }

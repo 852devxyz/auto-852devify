@@ -7,7 +7,7 @@ import { DownloadIcon, Loader2Icon } from 'lucide-react';
 import * as faceapi from 'face-api.js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
+import { maskTypes } from '@/settings/global';
 
 function drawRotatedImage(
     context: CanvasRenderingContext2D,
@@ -25,27 +25,14 @@ function drawRotatedImage(
     // save the current co-ordinate system
     // before we screw with it
     context.save();
-
     // move to the middle of where we want to draw our image
-    //context.translate(x - (width * 0.1  * hscale) , y); //Jonathan
     context.translate(x, y);
-    //context.scale(hscale, 1);
     // rotate around that point
     context.rotate(angle);
 
     // draw it up and to the left by half the width
     // and height of the image
-    //context.drawImage(image, -(width / 2), -(height / 2), width, height);
-
-    //let w = width * 0.06 * hscale; //0.06 = 10(middle)/160
-    let w = width * (maskAdjust -1 ) * hscale * enlarge;
-    
-    
-    //w = 0
-    console.log(width, w, hscale);
-    //w = width * 0.1;
-    // w = width;
-    
+    let w = width * (maskAdjust -1 ) * hscale * enlarge;    
     let mask = hscale > 0 ? maskL : maskR;
     console.log("RotateImage", hscale, mask);
     width = width * enlarge;
@@ -76,6 +63,7 @@ export function OutputCanvas({
 	flipMask,
     photoTitle,
     maskAdjust = 1,
+    maskType = 0,
     ...props
 }: HTMLAttributes<HTMLCanvasElement> & {
     baseImageUri: string | null;
@@ -90,6 +78,7 @@ export function OutputCanvas({
 	showMask?: boolean;
     photoTitle?: string | null | undefined;
     maskAdjust: number
+    maskType: number
 }) {
     const ref = useRef<HTMLCanvasElement>(null);
     const [ready, setReady] = useState(false);
@@ -106,7 +95,6 @@ export function OutputCanvas({
             if (!context) {
                 return;
             }
-            // console.log('inTimeout');
             const bgImage = await createImageElement(baseImageUri);
             const maskL = await createImageElement(maskImageLUri);
             const maskR = await createImageElement(maskImageRUri);
@@ -117,14 +105,11 @@ export function OutputCanvas({
                 faceapi.draw.drawFaceLandmarks(ref.current, detections);
             }
 
-            //return ;
-
-
             // Reference: https://github.com/akirawuc/auto-nounify-server/blob/main/services/nounify/main.py#L35
             if (showMask) {
                 const maskDimension = getMaskDimension(maskL, maskAdjust);
                 for (const face of detections) {
-                    let [midX, midY, width, height, angle, hscale] = calcuateMaskPosition(face.landmarks, maskDimension, flipMask);
+                    let [midX, midY, width, height, angle, hscale] = calcuateMaskPosition(maskType, face.landmarks, maskDimension, flipMask);
                     drawRotatedImage(context, maskL, maskR, maskAdjust, midX, midY, width, height, enlarge, angle, flipMask ? hscale : 1);
                 }
             }
@@ -132,7 +117,7 @@ export function OutputCanvas({
             setReady(true);
         }, 50);
         return () => clearTimeout(t);
-    }, [ref, detections, baseImageUri, showLandmarks, showMask, flipMask, maskImageLUri, maskImageRUri]);
+    }, [ref, detections, baseImageUri, showLandmarks, showMask, flipMask, maskImageLUri, maskImageRUri, maskAdjust, maskType]);
 
     return (
         <Card>
