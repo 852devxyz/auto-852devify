@@ -1,6 +1,4 @@
 'use client';
-
-import * as faceapi from 'face-api.js';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { DownloadIcon, Loader2Icon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -8,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { OutputCanvas } from '@/components/ui/OutputCanvas';
-import { singlePhotoFaceDetection, multplePhotoFaceDection } from '@/components/methods/faceDetection';
+import { singlePhotoFaceDetection, multiplePhotoFaceDection } from '@/lib/methods/faceDetection';
 
 import { useQuery } from '@tanstack/react-query';
 import { ImageAtom } from '@/lib/atomValues';
@@ -60,7 +58,6 @@ const FileInputForm = () => {
 
 function FaceDetection() {
   const { uri, maskLUri, maskRUri, minConfidence, filename, maskAdjust, flip, showMask, showLM, maskType } = useAtomValue(ImageAtom);
-  console.log("faceDetection", minConfidence, maskLUri, maskRUri);
   const isReady = false;
   const detections = singlePhotoFaceDetection(uri, minConfidence);
   return (

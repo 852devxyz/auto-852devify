@@ -1,5 +1,5 @@
 'use client';
-import { multplePhotoFaceDection } from "@/components/methods/faceDetection";
+import { multiplePhotoFaceDection } from "@/lib/methods/faceDetection";
 import { OutputCanvas } from "@/components/ui/OutputCanvas";
 import { settings } from "@/settings/global";
 
@@ -19,7 +19,7 @@ function DemoToBeImproved() {
     const minConfidence = 0.30;
     //let canvasList:any[] = [];
   
-    const detectionList = multplePhotoFaceDection(tbiPhotos, minConfidence);
+    const detectionList = multiplePhotoFaceDection(tbiPhotos, minConfidence);
   
     const canvasList = detectionList.map(d => {
       const {uri, filename, detections} = d;

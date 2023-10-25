@@ -1,7 +1,7 @@
 
 'use client';
 import { HTMLAttributes, useEffect, useRef, useState } from 'react';
-import { calcuateMaskPosition, getMaskDimension } from '@/components/methods/calculateMaskPosition'
+import { calcuateMaskPosition, getMaskDimension } from '@/lib/methods/calculateMaskPosition'
 import jsFileDownload from 'js-file-download';
 import { DownloadIcon, Loader2Icon } from 'lucide-react';
 import * as faceapi from 'face-api.js';
@@ -130,7 +130,7 @@ export function OutputCanvas({
                                 onClick={async () => {
                                     if (ref.current) {
                                         const response = await fetch(ref.current.toDataURL('image/png'));
-                                        jsFileDownload(await response.blob(), 'nounified.png');
+                                        jsFileDownload(await response.blob(), '852devify.png');
                                     }
                                 }}
                                 disabled={!ready}

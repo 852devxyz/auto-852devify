@@ -91,7 +91,7 @@ export function Toolbar() {
     const keys = Object.keys(maskTypes).filter((v) => isNaN(Number(v)));
 
     return keys.map((key, index) => {
-      return (<option value={index}>{key}</option>)
+      return (<option value={index} key={key}>{key}</option>)
 
     })
   }

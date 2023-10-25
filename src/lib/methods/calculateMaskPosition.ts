@@ -1,13 +1,30 @@
 import * as faceapi from 'face-api.js';
-import { MaskDimension } from '../../lib/types';
+import { MaskDimension } from '../types';
 import { maskTypes } from '@/settings/global';
 
+
+/**
+ * Description placeholder
+ * @date 2023/10/26 - 上午12:02:40
+ *
+ * @param {faceapi.Point[]} points
+ * @returns {{ x: number; y: number; }}
+ */
 function middlePoint(points: faceapi.Point[]) {
     const x = points.reduce((acc, curr) => acc + curr.x, 0) / points.length;
     const y = points.reduce((acc, curr) => acc + curr.y, 0) / points.length;
     return { x, y };
 }
 
+/**
+ * Get the mask image dimension from the HTMLImageElement
+ * @date 2023/10/26 - 上午12:03:12
+ *
+ * @export
+ * @param {HTMLImageElement} mask
+ * @param {number} [widthAdjust=1]
+ * @returns {MaskDimension}
+ */
 export function getMaskDimension(mask: HTMLImageElement, widthAdjust: number = 1): MaskDimension {
     const width = mask.width;
     const height = mask.height;
@@ -15,9 +32,25 @@ export function getMaskDimension(mask: HTMLImageElement, widthAdjust: number = 1
 }
 
 
+/**
+ * Calculate the positions of mask in the background image
+ * @date 2023/10/26 - 上午12:03:12
+ *
+ * @export
+ * @param {number} maskType
+ * @param {faceapi.FaceLandmarks68} landmarks
+ * @param {MaskDimension} maskDimension
+ * @param {boolean} flipMask
+ * @returns {Array<number>}
+ * @example [midX, midY, width, height, angle, hscale]
+ * @description midX,midY: Middle point of mask image in the background image
+ * @description width,height: width/height of mask image
+ * @description angle, hscale: rotated angle and flipping flag of the mask image
+ */
+
 export function calcuateMaskPosition(maskType: number, landmarks: faceapi.FaceLandmarks68, maskDimension: MaskDimension, flipMask: boolean): Array<number> {
     //Eyes Middle point
-    const leftEyeMid = middlePoint(landmarks.getLeftEye());
+    const leftEyeMid = middlePoint(landmarks.getLeftEye()); 
     const rightEyeMid = middlePoint(landmarks.getRightEye());
 
     //Most left/right points of eyes/face
