@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Get Dimension of the image (getMaskDimension) 1`] = `
+{
+  "height": 60,
+  "width": 160,
+  "widthAdjust": 1,
+}
+`;
+
+exports[`Get masks positions on the background image (calcuateMaskPosition) 1`] = `
+[
+  675.6616582870483,
+  184.46915025630238,
+  38.9515699390322,
+  14.606838727137074,
+  0.1785819852982527,
+  -1,
+]
+`;

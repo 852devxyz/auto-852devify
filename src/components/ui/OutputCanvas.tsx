@@ -8,50 +8,45 @@ import * as faceapi from 'face-api.js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { maskTypes } from '@/settings/global';
-
-function drawRotatedImage(
-    context: CanvasRenderingContext2D,
-    maskL: CanvasImageSource,
-    maskR: CanvasImageSource,
-    maskAdjust: number,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    enlarge: number,
-    angle: number,
-    hscale: number
-) {
-    // save the current co-ordinate system
-    // before we screw with it
-    context.save();
-    // move to the middle of where we want to draw our image
-    context.translate(x, y);
-    // rotate around that point
-    context.rotate(angle);
-
-    // draw it up and to the left by half the width
-    // and height of the image
-    let w = width * (maskAdjust -1 ) * hscale * enlarge;    
-    let mask = hscale > 0 ? maskL : maskR;
-    console.log("RotateImage", hscale, mask);
-    width = width * enlarge;
-    height = height * enlarge;
-    context.drawImage(mask, -((width + w) / 2), -(height / 2), width, height);
-    // and restore the coords to how they were when we began
-    context.restore();
-}
-
-function createImageElement(src: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-        const img = document.createElement('img');
-        img.src = src;
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-    });
-}
+import { drawRotatedImage } from '@/lib/methods/drawRotatedImage';
+import { createImageElement } from '@/lib/methods/createImageElement';
 
 
+
+/**
+ * Generate canvas and container html
+ * @date 2023/10/26 - 上午12:25:20
+ *
+ * @export
+ * @param {HTMLAttributes<HTMLCanvasElement> & {
+ *     baseImageUri: string | null;
+ *     maskImageLUri: string | null;
+ *     maskImageRUri: string | null;
+ *     enlarge: number;
+ *     detections?: faceapi.WithFaceLandmarks<{
+ *         detection: faceapi.FaceDetection;
+ *     }>[],
+ *     showLandmarks: boolean;
+ * 	flipMask: boolean;
+ * 	showMask?: boolean;
+ *     photoTitle?: string | null | undefined;
+ *     maskAdjust: number
+ *     maskType: number
+ * }} param0
+ * @param {*} param0.baseImageUri
+ * @param {*} param0.maskImageLUri
+ * @param {*} param0.maskImageRUri
+ * @param {*} [param0.enlarge=1]
+ * @param {*} param0.detections
+ * @param {*} param0.showLandmarks
+ * @param {*} param0.showMask
+ * @param {*} param0.flipMask
+ * @param {*} param0.photoTitle
+ * @param {*} [param0.maskAdjust=1]
+ * @param {*} [param0.maskType=0]
+ * @param {*} param0....props
+ * @returns {*}
+ */
 export function OutputCanvas({
     baseImageUri,
     maskImageLUri,
@@ -105,12 +100,15 @@ export function OutputCanvas({
                 faceapi.draw.drawFaceLandmarks(ref.current, detections);
             }
 
+            console.log(detections);
+
             // Reference: https://github.com/akirawuc/auto-nounify-server/blob/main/services/nounify/main.py#L35
             if (showMask) {
                 const maskDimension = getMaskDimension(maskL, maskAdjust);
                 for (const face of detections) {
+                    
                     let [midX, midY, width, height, angle, hscale] = calcuateMaskPosition(maskType, face.landmarks, maskDimension, flipMask);
-                    drawRotatedImage(context, maskL, maskR, maskAdjust, midX, midY, width, height, enlarge, angle, flipMask ? hscale : 1);
+                    drawRotatedImage(context, maskL, maskR, maskAdjust, midX, midY, width, height, angle, flipMask ? hscale : 1, enlarge);
                 }
             }
 

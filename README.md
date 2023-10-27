@@ -7,6 +7,10 @@ Inspired by `auto-nounify`, an open source tool by 852dev.xyz to anonymize event
 - npm run build
 ## Run development mode
 - npm run dev
+## JEST unit test
+- npx jest
+## JEST update snapshot
+- npx jest -u
 
 ## Settings
 - Image files should be placed in "public" folder

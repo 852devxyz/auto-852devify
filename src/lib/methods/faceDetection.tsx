@@ -85,4 +85,4 @@ function multiplePhotoFaceDection(photoList: string[], minConfidence: number = 0
   return detectionList;
 }
 
-export { singlePhotoFaceDetection, multiplePhotoFaceDection };
+export { initialFaceApi, singlePhotoFaceDetection, multiplePhotoFaceDection };

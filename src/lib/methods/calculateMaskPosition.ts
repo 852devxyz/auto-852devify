@@ -89,7 +89,7 @@ export function calcuateMaskPosition(maskType: number, landmarks: faceapi.FaceLa
 
     //for flipping according to the face direction
     const hscale = rightFaceDistance > leftFaceDistance && flipMask ? -1 : 1;
-    console.log("face:", leftEye, leftFace, rightEye, rightFace, leftFaceDistance, rightFaceDistance, leftFaceMid, rightFaceMid);
+    //TOBEREMOVE: console.log("face:", leftEye, leftFace, rightEye, rightFace, leftFaceDistance, rightFaceDistance, leftFaceMid, rightFaceMid);
 
     //Calculation the attributes accoring to maskType
     switch (maskType) {
