@@ -8,7 +8,8 @@ interface InputData {
     flip: boolean,
     showMask: boolean,
     showLM: boolean,
-    maskType: number
+    maskType: number,
+    enlarge: number
 }
 
 interface FileInputFormData {

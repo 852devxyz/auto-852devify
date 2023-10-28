@@ -57,7 +57,7 @@ const FileInputForm = () => {
 
 
 function FaceDetection() {
-  const { uri, maskLUri, maskRUri, minConfidence, filename, maskAdjust, flip, showMask, showLM, maskType } = useAtomValue(ImageAtom);
+  const { uri, maskLUri, maskRUri, minConfidence, filename, maskAdjust, flip, showMask, showLM, maskType,enlarge } = useAtomValue(ImageAtom);
   const isReady = false;
   const detections = singlePhotoFaceDetection(uri, minConfidence);
   return (
@@ -65,7 +65,7 @@ function FaceDetection() {
       {isReady ? <Loader2Icon className="h-6 w-6 animate-spin" /> : null}
       <OutputCanvas detections={detections}
         baseImageUri={uri} maskImageLUri={maskLUri} maskImageRUri={maskRUri} showLandmarks={showLM} showMask={showMask} maskType={maskType} flipMask={flip} photoTitle={filename}
-        className="h-auto max-w-full" key={`${uri}`} maskAdjust={maskAdjust} enlarge = {settings.default.enlarge} />
+        className="h-auto max-w-full" key={`${uri}`} maskAdjust={maskAdjust} enlarge = {enlarge} />
     </div>
   );
 }

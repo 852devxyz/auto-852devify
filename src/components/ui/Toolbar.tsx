@@ -44,7 +44,7 @@ export function Toolbar() {
     console.log("maskTypeHandler", e.target.value);
     if (e.target?.value) {
       const mt = parseInt(e.target.value);
-      setImageAtom((prev) => ({ ...prev, maskType: mt }));
+      setImageAtom((prev) => ({ ...prev, maskType: mt, enlarge: settings.enlargeByTypes.length > mt ? settings.enlargeByTypes[mt] : settings.default.enlarge }));
     }
 
   }
@@ -70,9 +70,9 @@ export function Toolbar() {
       return (
         <div className="bg-black rounded-sm w-20 flex flex-col">
           <div className="text-white text-xs text-center">{props.title}</div>
-          <button className="bg-white px-2 border-2" key={props.buttonKey}>
+          <div className="bg-white px-2 border-2" key={props.buttonKey}>
             <img src={props.uri} style={imgbtnStyle} />
-          </button>
+          </div>
           <input onChange={(e) => props.changeHandler(e)} type="file" id="files" accept=".jpg,.jpeg,.png" />
         </div>
       )
@@ -98,10 +98,11 @@ export function Toolbar() {
   return (
     <>
 
-      <div className="flex flex-row justify-start gap-x-1">
-
+      <div className="flex sm:flex-row flex-col justify-start gap-1">
+      <div className="flex flex-row sm:justify-start justify-center sm:gap-0 sm:gap-x-1 gap-2">
         <MaskButton title="Left" buttonKey="maskLUri" uri={maskLUri} changeHandler={changeMaskLeftHandler}></MaskButton>
         <MaskButton title="Right" buttonKey="maskRUri" uri={maskRUri} changeHandler={changeMaskRightHandler}></MaskButton>
+      </div>  
         <div className="flex flex-col">
           <div className="flex flex-row border-2 justify-stretch">
             <label className="w-32">Mask Type</label>
