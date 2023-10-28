@@ -7,8 +7,7 @@ export const settings= {
         "confidence": 0.3,
         "flip": true,
         "showMask":true,
-        "showLM":false,
-        "hideDemoButton": true,
+        "showLM":false
     },
    
 }

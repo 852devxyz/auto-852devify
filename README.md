@@ -19,24 +19,34 @@ Inspired by `auto-nounify`, an open source tool by 852dev.xyz to anonymize event
 ### global.ts Example
 ```
 {
- "modelsFolder": "/models", 
+    "modelsFolder": "/models",
+    "enlargeByTypes": [1.2, 2, 1, 1],
     "default": {
+        "enlarge": 1.2,
         "mask": {widthAdjust: 1.18, uriL: './red160px.png', uriR: './redr160px.png', comment: "Width Adjust: noggles width(160), noggles holder(30),due expand 1/5 for better output"},
         "confidence": 0.3,
         "flip": true,
         "showMask":true,
-        "showLM":false,
-        "hideDemoButton": true,
-    }
+        "showLM":false
+    },
+   
 }
+
 ```
 -- modelsFolder: Folder path of faceApi Models. Should be place inside /public
+-- enlargeByTypes: Mask resize ratio according the mask types
 -- default: All default attributes here
+-- default.enlarge: Default mark enlarge size on initial.
 -- default.mask: Default mask for initialize 
 -- default.mask.widthAdjust: Default value is 1. The value for adjusting the size of the mask for example the noggles' handle width is are 0.18 ratio of the whole noggles and which should not count as the width of the mask. Thus the adjust value should be 1.18
 -- default.mask.uriL: Uri of the mask if the target face direction is facing Left side.
 -- default.mask.uriR: Uri of the mask if the target face direction is facing Right side.
 -- default.mask.comment: Comment text for the mask attribute.    
+-- default.confidence: default confidence of face detection. Recommend range 0.3 - 0.4
+-- default.flip: auto flip mask according to face direction
+-- default.showMask: Show/Hide mask in the photo
+-- default.showLM: Show/Hide lanmark points in the photo
+-- maskTypes: Predefined mask calculation types: {"byFaceEyesWidth","byEyesMiddle", "byFaceWidth", "fullFace"}
 
 # Usage
 ## Face Detecction API
@@ -80,6 +90,7 @@ import { calcuateMaskPosition, getMaskDimension } from '@/components/methods/cal
 ```
 
 ### calcuateMaskPosition(landmarks: faceapi.FaceLandmarks68, maskDimension: MaskDimension)
+- Calculate the mask position on the photo. 4 predefined types are supported.
 - Landmarks from detections
 - maskDimension from getMaskDimension {width, height, widthAdjust}
 - return
@@ -91,6 +102,7 @@ import { calcuateMaskPosition, getMaskDimension } from '@/components/methods/cal
 ```
 import { OutputCanvas } from '@/components/ui/OutputCanvas';
 ```
+- Output html canvas of the photo. All canvas draw are based on this canvas.
 - baseImageUri: Target Photo uri
 - maskImageUri: Mask Image uri
 - detections: Detections from singlePhotoFaceDetection / multplePhotoFaceDection
