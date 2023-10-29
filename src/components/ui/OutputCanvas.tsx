@@ -100,7 +100,6 @@ export function OutputCanvas({
                 faceapi.draw.drawFaceLandmarks(ref.current, detections);
             }
 
-            console.log(detections);
 
             // Reference: https://github.com/akirawuc/auto-nounify-server/blob/main/services/nounify/main.py#L35
             if (showMask) {
