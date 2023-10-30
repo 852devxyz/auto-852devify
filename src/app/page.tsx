@@ -1,6 +1,5 @@
 'use client';
 import { FaceDetection, FileInputForm } from './client';
-import { DemoToBeImproved } from '@/samples/DemoToBeImproved';
 
 
 function content() {
