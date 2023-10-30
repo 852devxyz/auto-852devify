@@ -48,7 +48,18 @@ Inspired by `auto-nounify`, an open source tool by 852dev.xyz to anonymize event
 -- default.showLM: Show/Hide lanmark points in the photo
 -- maskTypes: Predefined mask calculation types: {"byFaceEyesWidth","byEyesMiddle", "byFaceWidth", "fullFace"}
 
-# Usage
+# Frontend Usage
+- Upload the photo in the File input box
+- Click 852Devify to process the face detection
+- Change the Left/Right Mask for customization
+- Change the Mask Type for the Predefine Mask area
+- Change Min. Conf. for mininum conference of face detection
+- Change Width Adjust the customize resize ratio for the mask
+- Click Auto-Flip to enable/disable auto flipping of the mask
+- Click Auto-Mask to enable/disable the drawing of the mask
+- Click Show landmarks to enable/disable the face landmarks points for checking
+
+# Function Usage
 ## Face Detecction API
 ```
 import { singlePhotoFaceDetection, multplePhotoFaceDection } from '@/components/methods/faceDetection';

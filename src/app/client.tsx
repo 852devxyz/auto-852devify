@@ -40,7 +40,7 @@ const FileInputForm = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-row items-center gap-2">
             <Input {...register('files')} type="file" id="files" accept=".jpg,.jpeg,.png" />
-            <Button type="submit">Nounify</Button>
+            <Button type="submit">852Devify</Button>
           </div>
           <div className="flex flex-col mt-2">
             
