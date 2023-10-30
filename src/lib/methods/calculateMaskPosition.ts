@@ -58,6 +58,8 @@ export function calcuateMaskPosition(maskType: number, landmarks: faceapi.FaceLa
     const rightEye = landmarks.positions[45];
     const leftFace = landmarks.positions[0];
     const rightFace = landmarks.positions[16];
+    const leftEyebrow = landmarks.positions[19];
+    const rightEyebrow = landmarks.positions[24];
 
     //face width
     const faceWidth = leftFace.x - rightFace.x;
@@ -127,20 +129,33 @@ export function calcuateMaskPosition(maskType: number, landmarks: faceapi.FaceLa
                 const angle = Math.atan2(dy, dx);
                 const width = Math.abs(faceWidth) * maskDimension.widthAdjust;
 
-                const height = faceHeight;
+                const height = faceHeight * 1.5;
                 const midX = nose.x;
                 const midY = nose.y;
+                return [midX, midY, width, height, angle, hscale]
+            })();
+        case maskTypes.overTheHead:
+            return (() => {
+                const dx = rightFace.x - leftFace.x;
+                const dy = rightFace.y - leftFace.y;
+                const angle = Math.atan2(dy, dx);
+                const width = Math.abs(faceWidth) * maskDimension.widthAdjust * 1.2;
+                const height = Math.abs(width * maskDimension.height / maskDimension.width);
+                const midX = nose.x;
+                const midY = Math.max(leftEyebrow.y, rightEyebrow.y) - (height);
                 return [midX, midY, width, height, angle, hscale]
             })();
 
         //Type 0: Base on middle of the face boundary and the eye boundary
         default:
             return (() => {
+               
+                
+                const width = Math.abs(leftFaceMid.x - rightFaceMid.x) * maskDimension.widthAdjust;
+                const height = Math.abs(width * maskDimension.height / maskDimension.width);
                 const dx = rightFaceMid.x - leftFaceMid.x;
                 const dy = rightFaceMid.y - leftFaceMid.y;
                 const angle = Math.atan2(dy, dx);
-                const width = Math.abs(leftFaceMid.x - rightFaceMid.x) * maskDimension.widthAdjust;
-                const height = Math.abs(width * maskDimension.height / maskDimension.width);
                 const midX = nose.x;
                 const midY = nose.y;
                 return [midX, midY, width, height, angle, hscale]
