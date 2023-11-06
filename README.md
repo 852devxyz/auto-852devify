@@ -33,20 +33,20 @@ Inspired by `auto-nounify`, an open source tool by 852dev.xyz to anonymize event
 }
 
 ```
--- modelsFolder: Folder path of faceApi Models. Should be place inside /public
--- enlargeByTypes: Mask resize ratio according the mask types
--- default: All default attributes here
--- default.enlarge: Default mark enlarge size on initial.
--- default.mask: Default mask for initialize 
--- default.mask.widthAdjust: Default value is 1. The value for adjusting the size of the mask for example the noggles' handle width is are 0.18 ratio of the whole noggles and which should not count as the width of the mask. Thus the adjust value should be 1.18
--- default.mask.uriL: Uri of the mask if the target face direction is facing Left side.
--- default.mask.uriR: Uri of the mask if the target face direction is facing Right side.
--- default.mask.comment: Comment text for the mask attribute.    
--- default.confidence: default confidence of face detection. Recommend range 0.3 - 0.4
--- default.flip: auto flip mask according to face direction
--- default.showMask: Show/Hide mask in the photo
--- default.showLM: Show/Hide lanmark points in the photo
--- maskTypes: Predefined mask calculation types: {"byFaceEyesWidth","byEyesMiddle", "byFaceWidth", "fullFace"}
+- modelsFolder: Folder path of faceApi Models. Should be place inside /public
+- enlargeByTypes: Mask resize ratio according the mask types
+- default: All default attributes here
+- default.enlarge: Default mark enlarge size on initial.
+- default.mask: Default mask for initialize 
+- default.mask.widthAdjust: Default value is 1. The value for adjusting the size of the mask for example the noggles' handle width is are 0.18 ratio of the whole noggles and which should not count as the width of the mask. Thus the adjust value should be 1.18
+- default.mask.uriL: Uri of the mask if the target face direction is facing Left side.
+- default.mask.uriR: Uri of the mask if the target face direction is facing Right side.
+- default.mask.comment: Comment text for the mask attribute.    
+- default.confidence: default confidence of face detection. Recommend range 0.3 - 0.4
+- default.flip: auto flip mask according to face direction
+- default.showMask: Show/Hide mask in the photo
+- default.showLM: Show/Hide lanmark points in the photo
+- maskTypes: Predefined mask calculation types: {"byFaceEyesWidth","byEyesMiddle", "byFaceWidth", "fullFace"}
 
 # Frontend Usage
 - Upload the photo in the File input box
