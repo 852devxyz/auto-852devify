@@ -34,7 +34,7 @@ const FileInputForm = () => {
   return (
     <Card className="mx-auto max-w-lg">
       <CardHeader>
-        <CardTitle>Auto-Nounify your pictures!</CardTitle>
+        <CardTitle>Auto-<a href="https://linktr.ee/852devxyz" target="_blank" style={{color: "blue"}} >852dev</a>ify your pictures!</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
