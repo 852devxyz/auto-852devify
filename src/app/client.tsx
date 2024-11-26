@@ -13,21 +13,29 @@ import { Toolbar } from '@/components/ui/Toolbar';
 import { FileInputFormData } from '@/lib/types';
 import { settings } from '@/settings/global';
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as faceapi from 'face-api.js';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const FileInputForm = () => {
   const setImageAtom = useSetAtom(ImageAtom);
   const [showError, setShowError] = useState(false);
-  const { handleSubmit, register } = useForm({
+  const { handleSubmit, register, watch } = useForm({
     defaultValues: {
       files: []
     } as FileInputFormData,
   });
 
+  // Watch the files field to automatically hide error when a file is selected
+  const files = watch('files');
+  useEffect(() => {
+    if (files && files.length > 0) {
+      setShowError(false);
+    }
+  }, [files]);
+
   const onSubmit = async ({ files }: FileInputFormData) => {
-    if (files.length === 0) {
+    if (!files || files.length === 0) {
       setShowError(true);
       return;
     }
@@ -47,13 +55,13 @@ const FileInputForm = () => {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>
-                Please select an image before clicking 852devify.
+                Please select an image before clicking 852Devify.
               </AlertDescription>
             </Alert>
           )}
           <div className="flex flex-row items-center gap-2">
-            <Input {...register('files')} type="file" id="files" accept=".jpg,.jpeg,.png" onChange={() => setShowError(false)} />
-            <Button type="submit">852devify</Button>
+            <Input {...register('files')} type="file" id="files" accept=".jpg,.jpeg,.png" />
+            <Button type="submit">852Devify</Button>
           </div>
           <div className="flex flex-col mt-2">
             <Toolbar />
