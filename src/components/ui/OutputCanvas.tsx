@@ -1,4 +1,3 @@
-
 'use client';
 import { HTMLAttributes, useEffect, useRef, useState } from 'react';
 import { calcuateMaskPosition, getMaskDimension } from '@/lib/methods/calculateMaskPosition'
@@ -136,14 +135,12 @@ export function OutputCanvas({
                                 Save
                             </Button>
                         )}
-                    </div></div>
+                    </div>
+                </div>
             </CardHeader>
             <CardContent>
                 <canvas ref={ref} {...props} />
             </CardContent>
-
-
-            {baseImageUri && detections && !ready ? <div className="absolute inset-0 z-10 bg-black/50" /> : null}
         </Card>
     );
 }

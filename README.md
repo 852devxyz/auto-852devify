@@ -50,7 +50,7 @@ Inspired by `auto-nounify`, an open source tool by 852dev.xyz to anonymize event
 
 # Frontend Usage
 - Upload the photo in the File input box
-- Click 852Devify to process the face detection
+- Click 852devify to process the face detection
 - Change the Left/Right Mask for customization
 - Change the Mask Type for the Predefine Mask area
 - Change Min. Conf. for mininum conference of face detection
