@@ -47,13 +47,13 @@ const FileInputForm = () => {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>
-                Please select an image before clicking 852Devify.
+                Please select an image before clicking 852devify.
               </AlertDescription>
             </Alert>
           )}
           <div className="flex flex-row items-center gap-2">
             <Input {...register('files')} type="file" id="files" accept=".jpg,.jpeg,.png" onChange={() => setShowError(false)} />
-            <Button type="submit">852Devify</Button>
+            <Button type="submit">852devify</Button>
           </div>
           <div className="flex flex-col mt-2">
             <Toolbar />
